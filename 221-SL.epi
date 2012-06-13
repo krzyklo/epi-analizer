@@ -1,0 +1,110 @@
+		 					
+#		Recipe: 221-SL
+#		Substrate: 1 pl.2" GaAs SI
+#		Changes: 	
+               ReactorData = LaudaTemp1 LaudaTemp2 LaudaTemp3 LaudaTemp4 LaudaTemp5 LaudaTemp6
+	       Power ReactorTemp DORPress dP_Filter Position ReactorPress;
+
+
+layer {
+	             VentVac open, until VentVac open;
+	1:00	"01   Initial setting",
+		      N2.line close, H2.line open, N2.run close, H2.run open,
+		      AsH3_1.source = 70, AsH3_1.push follow 500 - AsH3_1.source,
+		      PH3_1.source = 200, PH3_1.push follow 500 - PH3_1.source, DummyHyd_1.run open,		
+		      RunHydride to 3000, VentHydride to 700, DummyHyd_1.source = 500, 
+		      TMGa_1.source = 15, TMGa_1.push follow 500 - TMGa_1.source, TMGa_1.press = 1000,		
+		      TMAl_1.source = 2.1, TMAl_1.push follow 500 - TMAl_1.source, TMAl_1.press = 1000,
+                    DEZn_1.source = 80, DEZn_1.inject = 50, DEZn_1.dilute = 100, DEZn_1.press = 1800,
+		      SiH4_1.source = 100, SiH4_1.inject = 100, SiH4_1.dilute = 10, SiH4_1.press = 1800,		
+		      RunMO to 4000, VentMO to 500, DummyMO_1.run open, DummyMO_1.source = 500,		
+		      RunDopant to 4000, VentDopant to 500, SatRotation = 10, MainRotation = 100,
+		      ReactorValve open, PumpBypass close, IGS open, VentVac open,
+		      DORVac close, DORFill close, MainPump on, Heater off, Cooling on,
+		      Parameters off, Heattape on, LinerPurge to 1000, ReactorPress = 1000;
+
+
+	5	"02   Taking pressure control", Control on, Power = 2;
+	3:00	"03   Pressure and temperature ramp", ReactorPress to 100, Heater on, ReactorTemp = 720;
+		"04", Power = 75, until ReactorTemp >> 300;
+	3	"05   Stabilization", AsH3_1.line open, AsH3_1.run open, DummyHyd_1.run close;
+              "06", Power = 95, until ReactorTemp >> 700;
+	2:00	"07   Bake";
+	3	"08   Set reactor temp", ReactorTemp = 700;
+		"09", until ReactorTemp << 705;
+	1:00	"10   Prerun", AsH3_1.source to 200, TMGa_1.line open;
+	8:00	"11  (1) GaAs buffer", begin stat ReactorData, TMGa_1.run open,  
+                    DummyMO_1.run close, DEZn_1.line open;
+	2:45	"12   GaAs p-doped 1E18, d=100nm", DEZn_1.run open;
+	30:00	"13   GaAs udp, d=1.5micr.", DEZn_1.run close, DEZn_1.line close;
+	11:15	"13a  cont.", TMAl_1.line open, SiH4_1.line open;
+	10	"14   Stop GaAs", end stat ReactorData, TMGa_1.run close,
+		      DummyMO_1.run open, DummyMO_1.source to 1000, RunMO to 3500, TMAl_1.source=2.1,
+		      SiH4_1.source=20, SiH4_1.dilute=500, SiH4_1.inject=10;
+	1:19	"15  Al0.05GaAsAs:Si 1e18, d=50nm", begin stat ReactorData, SiH4_1.run open, 
+                    TMAl_1.run open, TMGa_1.run open, DummyMO_1.run close; 
+	10	"16   Stop AlGaAs", end stat ReactorData, TMGa_1.run close, TMAl_1.run close, 
+                    SiH4_1.run close, DummyMO_1.run open, DummyMO_1.source to 1000, RunMO to 3500,
+		      SiH4_1.source=100, SiH4_1.dilute=6, SiH4_1.inject=100, TMAl_1.source=35;         
+
+
+	loop 17
+	{
+	3:44	"17  AlAs:Si 1e18, d=65nm, r=1/2", begin stat ReactorData, SiH4_1.run open, 
+                    TMAl_1.run open, TMGa_1.run close, DummyMO_1.run close; 
+	10	"18   Stop AlAs", end stat ReactorData, TMGa_1.run close, TMAl_1.run close, 
+                    SiH4_1.run close, DummyMO_1.run open, DummyMO_1.source to 1000, RunMO to 3500,
+		      TMAl_1.source=9.9, SiH4_1.source=5, SiH4_1.dilute=100, SiH4_1.inject=10;
+	1:25	"19  Al0.14GaAs:Si 1e18, d=56nm", begin stat ReactorData, SiH4_1.run open, 
+                    TMAl_1.run open, TMGa_1.run open, DummyMO_1.run close; 
+	10	"20   Stop AlGaAs", end stat ReactorData, TMGa_1.run close, TMAl_1.run close, 
+                    SiH4_1.run close, SiH4_1.source=100, SiH4_1.dilute=6, SiH4_1.inject=100,					
+		      DummyMO_1.run open, DummyMO_1.source to 1000, RunMO to 3500, TMAl_1.source=35;
+	}
+	
+
+	5	"21  stop", TMAl_1.source=70;
+	17.2	"22  AlAs:udp, d=10nm", begin stat ReactorData, 
+                   TMAl_1.run open, TMGa_1.run close, DummyMO_1.run close; 
+	10	"23  Stop AlAs", end stat ReactorData, TMGa_1.run close, TMAl_1.run close, 
+                   SiH4_1.run close, DummyMO_1.run open, DummyMO_1.source to 1000, RunMO to 3500, 
+                   TMAl_1.source=8.5, SiH4_1.line close;
+	4:07	"24  Al0.12GaAs udp, d=163nm", begin stat ReactorData, 
+                   TMAl_1.run open, TMGa_1.run open, DummyMO_1.run close, DEZn_1.line open; 
+	10	"25   Stop AlGaAs", end stat ReactorData, TMGa_1.run close, TMAl_1.run close,
+		      DummyMO_1.run open, DummyMO_1.source to 1000, RunMO to 3500, TMAl_1.source=70,
+		      DEZn_1.source=80, DEZn_1.dilute=200,DEZn_1.inject=100;
+
+
+
+	loop 2
+	{
+	1:52	"26  AlAs:Zn 1e18, d=65nm", begin stat ReactorData, DEZn_1.run open, 
+                   TMAl_1.run open, TMGa_1.run close, DummyMO_1.run close; 
+	10	"27  Stop AlAs", end stat ReactorData, TMGa_1.run close, TMAl_1.run close,
+                   DEZn_1.run close, DummyMO_1.run open, DummyMO_1.source to 1000, RunMO to 3500,
+		     TMAl_1.source=9.9, DEZn_1.source=90, DEZn_1.dilute=500, DEZn_1.inject=80;
+	1:25	"28  Al0.14GaAs:Zn 1e18, d=56nm", begin stat ReactorData, DEZn_1.run open, 
+                   TMAl_1.run open, TMGa_1.run open, DummyMO_1.run close; 
+	10	"29  Stop AlGaAs", end stat ReactorData, TMGa_1.run close, TMAl_1.run close, 
+                   DEZn_1.run close, DummyMO_1.run open, DummyMO_1.source to 1000, RunMO to 3500, 
+                   TMAl_1.source=70, DEZn_1.source=80, DEZn_1.dilute=200, DEZn_1.inject=100;
+	}
+  
+	30	"30   Stop GaAs", end stat ReactorData, TMGa_1.run close, TMGa_1.line close, 
+                    DEZn_1.run close, DEZn_1.line close, TMAl_1.line close,
+		      ReactorTemp = 20, Heater off, DummyMO_1.run open, AsH3_1.source to 50;
+		"31", until ReactorTemp << 300;
+	3	"32   Stop AsH3", AsH3_1.run close, AsH3_1.line close, DummyMO_1.run close;										
+	3:00	"33   Ramp Pressure", ReactorPress to 970;
+		"34", until ReactorTemp << 200;
+	2:00	"35   Pump down under N2", N2.run open, H2.run close, N2.line close, H2.line open,
+		      VentVac close, LinerPurge to 1000, RunMO = 1000,
+		      RunHydride = 500, RunDopant = 500, ReactorPress to 50;
+	3:00	"36   Refill under Nitrogen", RunMO to 4000 in 30, RunHydride to 4000 in 30,
+		      RunDopant to 4000 in 30, ReactorPress to 1000;
+	3	"37", Control off;
+	1:00	"38   Prepare for opening of the Reactor", PumpBypass open, DORVac open,
+		      RunMO to 1000, RunHydride to 500, RunDopant to 500;
+}
+#WININFO 4, 501, 0, 226

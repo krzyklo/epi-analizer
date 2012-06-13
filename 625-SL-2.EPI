@@ -1,0 +1,76 @@
+ 			
+
+#		Recipe:625-SL-2
+#               Substrate: 1 pl.InP:S 	
+#		Changes: 
+               ReactorData = LaudaTemp1 LaudaTemp2 LaudaTemp3 LaudaTemp4 LaudaTemp5 LaudaTemp6
+	       Power ReactorTemp DORPress dP_Filter Position ReactorPress;
+		 
+  
+layer {
+	             VentVac = open, until VentVac == open;
+	1:00	"01   Initial setting", N2.line close, H2.line open, N2.run close, H2.run open,
+		      AsH3_1.source = 200, AsH3_1.push = 300, PH3_1.source = 100, PH3_1.push = 400,
+		      RunHydride to 4000, VentHydride to 700, DummyHyd_1.source = 500, 				
+		      TMGa_1.source = 3, TMGa_1.push = 497, TMGa_1.press = 1000, DummyHyd_1.run open,
+		      TMAl_1.source = 7.9, TMAl_1.push = 492.1, TMAl_1.press = 1000,
+		      TMIn_1.source = 218, TMIn_1.push = 282, TMIn_1.press to 300,DORVac close,
+		      TMIn_2.source = 25.6, TMIn_2.push = 474.4, TMIn_2.press = 300, 
+          	      SiH4_1.source = 18, SiH4_1.inject = 22.4, SiH4_1.dilute = 500, 
+		      RunMO to 4000, VentMO to 500, DummyMO_1.run open, DummyMO_1.source = 500,
+		      RunDopant to 5000, VentDopant to 500, SatRotation = 350, MainRotation = 50,
+		      ReactorValve open, PumpBypass close, IGS open, SiH4_1.press = 1800,
+		      DORFill close, MainPump on, Heater off, Cooling on, Parameters off,
+		      VentVac open, Heattape on, LinerPurge to 1000, ReactorPress = 1000;
+
+
+	5	"02   Taking pressure control", Control on, Power = 2;
+	3:00	"03   Pressure and temperature ramp", ReactorPress to 100, Heater on, Power to 40;
+		"04", until ReactorTemp >> 100;
+		"05", Power to 75 in 60, until ReactorTemp >> 300;
+	3	"06   Stabilization", PH3_1.line open, PH3_1.run open, DummyHyd_1.run close;
+	3	"07   Set reactor temperature", Power = 95, ReactorTemp = 700;
+		"08", until ReactorTemp >> 695;
+	02:00	"09   Bake", TMIn_1.line open, TMIn_2.line open;
+	3	"10   Set reactor temp", ReactorTemp = 650;
+		"11", until ReactorTemp << 660;
+	2:00	"12   Prerun", PH3_1.source to 350, PH3_1.push to 150;
+	10:16	"13   InP buffer", begin stat ReactorData, TMAl_1.line open, AsH3_1.line open,
+		      SiH4_1.line open, TMIn_1.run open, TMGa_1.line open, DummyMO_1.run close;
+	10	"14   Stop InP Buffer", end stat ReactorData, TMIn_1.run close, RunMO to 3500,
+		      DummyMO_1.run open, DummyMO_1.source to 1000, AsH3_1.source=200, 
+                    TMIn_1.source=79;
+	0.5	"15", PH3_1.run close, DummyHyd_1.run open, PH3_1.line close;
+	0.5	"16", AsH3_1.run open, DummyHyd_1.run close;
+
+
+loop 35
+{
+	23.8	"17   In0.366AlAs Layer d=2.65nm", begin stat ReactorData,
+		      TMIn_2.run open, TMAl_1.run open, DummyMO_1.run close;
+	5	"18   stop", TMAl_1.run close, TMIn_2.run close,
+		      AsH3_1.source=180, DummyMO_1.run open;	
+	20.1	"19   In0.672GaAs Layer n=-3E17cm-3 d=3nm", begin stat ReactorData,
+		      TMIn_1.run open, TMGa_1.run open, SiH4_1.run open, DummyMO_1.run close;
+	5	"20   stop", TMIn_1.run close, TMGa_1.run close, SiH4_1.run close,
+		      AsH3_1.source=200, DummyMO_1.run open;
+}
+
+	30	"21   End layer", end stat ReactorData, ReactorTemp = 20, Heater off, 
+                    AsH3_1.source to 50, AsH3_1.push to 450, TMIn_2.run close, 
+                    TMIn_2.line close, TMAl_1.run close, TMAl_1.line close,
+	             TMIn_1.line close, TMGa_1.line close;
+		"22", SiH4_1.line close, until ReactorTemp << 300;
+	3	"23   Stop AsH3", AsH3_1.run close, AsH3_1.line close, DummyMO_1.run close;		        		        		        		        		        
+	3:00	"24   Ramp Pressure", ReactorPress to 970;
+		"25", until ReactorTemp << 250;
+	2:00	"26   Pump down under N2", N2.run open, H2.run close, N2.line close, H2.line open,
+		      VentVac close, LinerPurge to 1000, RunMO = 1000,
+		      RunHydride = 500, RunDopant = 500, ReactorPress to 50;
+	3:00	"27   Refill under Nitrogen", RunMO to 4000 in 30, RunHydride to 4000 in 30,
+		      RunDopant to 4000 in 30, ReactorPress to 1000;
+	3	"28", Control off;
+	1:00	"29   Prepare for opening of the Reactor", PumpBypass open, DORVac open,
+		      RunMO to 1000, RunHydride to 500, RunDopant to 500;
+}
+#WININFO 4, 501, 0, 226
