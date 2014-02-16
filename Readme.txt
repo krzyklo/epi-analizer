@@ -1,4 +1,3 @@
-
 A Perl script which parse Aixtron's EPI recipes and extract to standard output (and CSV file) main parameters of detected layers. It allows to quickly and easily check whether there are no simple errors and whether complex recipes are in agreement with plans. REQUIREMENTS: PERL which could be downloaded from website: http://www.activestate.com/activeperl/downloads
 
 USAGE: 
@@ -18,4 +17,4 @@ A lot of settings are now hardcoded, but in future they may be extracted into co
 
 I hope that this script will decrease the amount of recipe errors and ease a little life of MOCVD engineers. 
 
-epi-analizer, is written by Krzysztof Kłos, klos.krzysztof@gmail.com 
+epi-analizer, was written by Krzysztof Kłos, klos.krzysztof@gmail.com 
